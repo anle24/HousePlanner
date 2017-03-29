@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Create Transaction</title>
+	{% load staticfiles %}
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/css/materialize.min.css">
+	<link rel="stylesheet" type="text/css" href="{% static 'houseplanner/css/style.css' %}">
+	<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/js/materialize.min.js"></script>
+</head>
+<body>
+	<nav>
+      <div class="nav-wrapper">
+          <a class="brand-logo">Welcome Home, {{user.first_name}}</a>
+          <ul id="nav-mobile" class="right hide-on-med-and-down">
+          	<li><a href="/calendar">Calendar</a></li>
+          	<li><a href="">User Profile</a></li>
+	        <li><a href="/logout">Logout</a></li>
+	      </ul>
+        </div>
+    </nav>
+    <div class="container">
+    	<div class="row">
+    		<h3>Create Expense</h3>
+    		<p>Charge your housemates evenly.</p>
+    	</div>
+    	<div class="row">
+    		<form class="col s12" action="/create_transaction" method="post">
+    		{% csrf_token %}
+    			<div class="row">
+					<div class="input-field col s12">
+						<input id="expense_name" type="text" name="expense_name" class="validate" required="" aria-required="true">
+						<label for="expense_name">Transaction Description</label>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col s6 offset-s6">
+						<label for="due_date">Due Date (Optional):</label>
+					</div>
+				</div>
+				<div class="row">
+					<div class="input-field col s6">
+						<input id="amount" type="number" step="0.01" name="amount">
+						<label for="transaction_name">Total Amount</label>
+					</div>
+					<div class="input-field col s6">
+						<input id="due_date" type="date" name="due_date" class="validate" required="" aria-required="true">
+					</div>
+				</div>
+				<div class="row">
+					<h6 class="col s3">Summary of Charges:</h6>
+					<div class="col s4">
+					{% for housemate in housemates %}
+						<p>
+							<span>{{housemate.first_name}} {{housemate.last_name}}</span>
+							<span class="right split-amount">$0.00</span>
+						</p>
+					{% endfor %}
+					</div>
+				</div>
+				<button class="btn waves-effect waves-light right" type="submit">Charge</button>
+    		</form>
+    	</div>
+    </div>
+
+    <script type="text/javascript">
+    	$(document).ready(function() {
+    		$('#amount').bind('input propertychange', function() {
+    			$('.split-amount').html("$" + ($(this).val()/{{housemates.count}}).toFixed(2));
+    		});
+
+    	})
+    </script>
+</body>
+</html>

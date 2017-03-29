@@ -1,0 +1,78 @@
+/*APP WIDE*/
+
+.row {
+	margin-bottom: 0px;
+}
+
+.container {
+	width: 80%;
+}
+
+.nav-wrapper > a {
+	margin-left: 5px;
+}
+
+/*LOGIN PAGE*/
+
+.middle {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 500px;
+}
+
+
+.input {
+	margin-bottom: 0px;
+}
+
+.error {
+	color: red;
+	margin-top: -18px;
+	font-size: 0.8em;
+}
+
+.flash-errors {
+	color: red;
+
+}
+
+/*JOIN AND CREATE PAGE*/
+
+.center-btn {
+	display: block;
+	margin: 0 auto;
+}
+
+.new-house, .join-house {
+	display: none;
+}
+
+.join-house {
+	display: none;
+}
+
+#join-house {
+	margin-bottom: 10px;
+}
+
+
+/*CHARGE PAGE*/
+
+.split-amount {
+	line-height: 10px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

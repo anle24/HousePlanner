@@ -6,12 +6,13 @@
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/css/materialize.min.css">
 	<link rel="stylesheet" type="text/css" href="{% static 'houseplanner/css/style.css' %}">
 	<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/js/materialize.min.js"></script>
 </head>
 <body>
 	<nav>
       <div class="nav-wrapper">
-          <a class="brand-logo">Welcome Home, {{user.first_name}}</a>
+          <a href="/dashboard" class="brand-logo">Welcome Home, {{user.first_name}}</a>
           <ul id="nav-mobile" class="right hide-on-med-and-down">
           	<li><a href="/calendar">Calendar</a></li>
           	<li><a href="">User Profile</a></li>
@@ -25,7 +26,7 @@
     		<p>Charge your housemates evenly.</p>
     	</div>
     	<div class="row">
-    		<form class="col s12" action="/create_transaction" method="post">
+    		<form id="formValidate" class="col s12" action="/create_transaction" method="post">
     		{% csrf_token %}
     			<div class="row">
 					<div class="input-field col s12">
@@ -62,12 +63,50 @@
     		</form>
     	</div>
     </div>
-
+    {% if messages %}
+					<div class="flash-errors">
+						<ul>
+							{% for message in messages %}
+							<li>{{ message }}</li>
+						{% endfor %}
+						</ul>
+					</div>
+				{% endif %}
     <script type="text/javascript">
+
+    	jQuery.validator.addMethod("validDate", function(value, element) {
+    		if (value == "") {
+    			return true;
+    		}
+			var todaysDate = new Date();
+			var inputDate = new Date(value);
+			return inputDate.setHours(0,0,0,0) >= todaysDate.setHours(0,0,0,0)
+		}, "Please enter a valid date (after today).");
+
     	$(document).ready(function() {
     		$('#amount').bind('input propertychange', function() {
     			$('.split-amount').html("$" + ($(this).val()/{{housemates.count}}).toFixed(2));
     		});
+
+			$("#formValidate").validate({
+		        rules: {
+					due_date: {
+						required: false,
+						validDate: true
+					}
+		        },
+		        messages: {
+		        },
+		        errorElement : 'div',
+		        errorPlacement: function(error, element) {
+		          var placement = $(element).data('error');
+		          if (placement) {
+		            $(placement).append(error)
+		          } else {
+		            error.insertAfter(element);
+		          }
+		        }
+		     });
 
     	})
     </script>

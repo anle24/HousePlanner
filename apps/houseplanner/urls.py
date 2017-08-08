@@ -13,4 +13,15 @@ urlpatterns = [
     url(r'^calendar$', views.calendar), # renders calendar page
     url(r'^group_charge$', views.group_charge), # renders group charge page
     url(r'^create_transaction$', views.create_transactions), # create transaction in model
+    url(r'^add_event$', views.add_event), # add event to calendar
+    url(r'^calendar_events$', views.calendarEvents), # grabs events turns to json for fullcalendar
+    url(r'^event/(?P<id>\d+)$', views.event_info), # updates event when dragged and dropped
+    url(r'^delete_event/(?P<id>\d+)$', views.delete_event), # deletes an event
+    url(r'^post_message$', views.post_message), #posts a message
+    url(r'^post_comment/(?P<id>\d+)$', views.post_comment), # posts a comment
+    # editing users does not work######################
+    url(r'^edit_user$', views.edit_user),
+    url(r'^change_info$', views.change_info),
+    # url(r'^change_password$', views.change_password),
+    ###################################################
 ]

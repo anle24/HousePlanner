@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Edit User Profile</title>
+	{% load staticfiles %}
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/css/materialize.min.css">
+	<link rel="stylesheet" type="text/css" href="{% static 'houseplanner/css/edit.css' %}">
+	<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/js/materialize.min.js"></script>
+  <script type="text/javascript" src="{% static 'houseplanner/javascripts/jquery.formatter.js' %}"></script>
+</head>
+<body>
+  <nav>
+    <div class="nav-wrapper">
+        <a href="/dashboard" class="brand-logo">Welcome Home, {{user.first_name}}</a>
+        <ul id="nav-mobile" class="right hide-on-med-and-down">
+          <li><a href="#">Calendar</a></li>
+          <li><a href="/group_charge"> Make a Charge </a></li>
+          <li><a href="/edit_user">User Profile</a></li>
+          <li><a href="/logout">Logout</a></li>
+        </ul>
+      </div>
+    </nav>
+	<div class="container">
+		<div class="row">
+			<div class="col s6"></div>
+			<div class=""></div>
+		</div>
+
+		<div class="row">
+			<form class="col s5 formValidate" id="formValidate" action="/change_info" method="post">
+				{% csrf_token %}
+				<h2>Edit Your Information</h2>
+        {% if messages %}
+          {% for message in messages %}
+            <h3> {{message}} </h3>
+          {% endfor %}
+        {% endif %}
+				<div class="row">
+					<div class="col s12">
+						<label for="first_name">First Name</label>
+					</div>
+					<div class="input-field col s12">
+						<input id="first_name" type="text" name="first_name" class="validate" required="" aria-required="true" value="{{user.first_name}}">
+					</div>
+				</div>
+				<div class="row">
+					<div class="col s12">
+					<label for="last_name">Last Name</label>
+					</div>
+					<div class="input-field col s12">
+						<input id="last_name" type="text" name="last_name" class="validate" required="" aria-required="true" value="{{user.last_name}}">
+					</div>
+				</div>
+				<div class="row">
+					<div class="col s12">
+					<label for="email">Email</label>
+					</div>
+					<div class="input-field col s12">
+						<input id="email" type="email" name="email" class="validate" required="" aria-required="true" value="{{user.email}}">
+					</div>
+				</div>
+        <div class="row">
+					<div class="col s12">
+					<label for="phone">Phone Number</label>
+					</div>
+          <div class="input-field col s12">
+            <input id="phone" type="text" name="phone" class="validate" required="" aria-required="true" value="{{user.phone}}">
+          </div>
+        </div>
+				<button class="btn waves-effect waves-light right" type="submit">Make Changes</button>
+			</form>
+			<div class="col s2 middle">OR</div>
+			<form class="col s5"  action="/process_logreg" method="post">
+				{% csrf_token %}
+				<input type="hidden" name="action" value="login">
+				<h2>Change Your Password</h2>
+				{% if messages %}
+					<div class="flash-errors">
+						<ul>
+							{% for message in messages %}
+							<li>{{ message }}</li>
+						{% endfor %}
+						</ul>
+					</div>
+				{% endif %}
+				<div class="row">
+					<div class="input-field col s12">
+						<input id="password" type="password" name="password">
+						<label for="password">Password</label>
+					</div>
+				</div>
+        <div class="row">
+          <div class="input-field col s12">
+            <input id="confirm_pw" type="password" name="confirm_pw" class="validate" required="" aria-required="true">
+            <label for="confirm_pw">Confirm Password</label>
+          </div>
+        </div>
+				<button class="btn waves-effect waves-light right" type="submit">Change Password</button>
+			</form>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+		jQuery.validator.addMethod("validEmail", function(value, element) {
+			return /^.+@.+.com$/.test(value);
+		}, "Please enter a valid email address");
+
+
+		jQuery.validator.addMethod("validDate", function(value, element) {
+			var todaysDate = new Date();
+			var inputDate = new Date(value);
+			return inputDate.setHours(0,0,0,0) < todaysDate.setHours(0,0,0,0)
+		}, "Please enter a valid date (before today)");
+
+		$(document).ready(function () {
+			$("#formValidate").validate({
+		        rules: {
+		            first_name: {
+		                required: true,
+		                minlength: 2
+		            },
+		            last_name: {
+		                required: true,
+		                minlength: 2
+		            },
+		            email: {
+		                required: true,
+		                validEmail:true
+		            },
+                phone: {
+                    required: true,
+                    minlength:10
+                },
+		            password: {
+						required: true,
+						minlength: 8
+					},
+					confirm_pw: {
+						required: true,
+						minlength: 8,
+						equalTo: "#password"
+					},
+					birthdate: {
+						required: true,
+						validDate: true
+					}
+		        },
+		        messages: {
+		            first_name:{
+		                minlength: "Enter at least 2 characters for first name"
+		            },
+		            last_name:{
+		                minlength: "Enter at least 2 characters for last name"
+		            },
+                phone:{
+                    minlength: "Enter in a 10 digit phone number"
+                }
+		        },
+		        errorElement : 'div',
+		        errorPlacement: function(error, element) {
+		          var placement = $(element).data('error');
+		          if (placement) {
+		            $(placement).append(error)
+		          } else {
+		            error.insertAfter(element);
+		          }
+		        }
+		     });
+      $('#phone').formatter({
+            'pattern': '({{999}}) {{999}}-{{9999}}',
+            'persistent': true
+      });
+		})
+	</script>
+</body>
+
+</html>

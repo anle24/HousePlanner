@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>{{event.title}}</title>
+	{% load staticfiles %}
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/css/materialize.min.css">
+	<link rel="stylesheet" type="text/css" href="{% static 'houseplanner/css/style.css' %}">
+	<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/js/materialize.min.js"></script>
+</head>
+<body>
+	<nav>
+      <div class="nav-wrapper">
+          <a href="/dashboard" class="brand-logo">Welcome Home, {{user.first_name}}</a>
+          <ul id="nav-mobile" class="right hide-on-med-and-down">
+          	<li><a href="/calendar">Calendar</a></li>
+          	<li><a href="">User Profile</a></li>
+	        <li><a href="/logout">Logout</a></li>
+	      </ul>
+        </div>
+    </nav>
+    <div class="container">
+    	<h1>Event: {{event.title}}</h1>
+    	<h5>Event Description: {{event.description}}</h5>
+    	<p>Start: {{start_date}} {{start_time}}</p>
+    	<p>End: {{end_date}} {{end_time}}</p>
+    	<div class="row">
+    		<a class="center waves-effect waves-light btn" href="/calendar">Go Back</a>
+    		{% if request.session.user == event.user.id %}
+    			<a class="center waves-effect waves-light btn red darken-4" href="/delete_event/{{event.id}}">Delete</a>
+    		{% endif %}
+    	</div>
+    	
+    </div>
+</body>
+</html>
+
+
+

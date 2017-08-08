@@ -1,19 +1,23 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Dashboard</title>
+	<title>Calendar</title>
 	{% load staticfiles %}
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/css/materialize.min.css">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.3.0/fullcalendar.min.css">
 	<link rel="stylesheet" type="text/css" href="{% static 'houseplanner/css/style.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'houseplanner/css/fullcalendar.css' %}">
 	<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+	<script type="text/javascript" src="{% static 'houseplanner/js/moment.js' %}"></script>
+	<script type="text/javascript" src="{% static 'houseplanner/js/jquery.min.js' %}"></script>
+	<script type="text/javascript" src="{% static 'houseplanner/js/moment.min.js' %}"></script>
+	<script type="text/javascript" src="{% static 'houseplanner/js/fullcalendar.js' %}"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/js/materialize.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.3.0/fullcalendar.min.js"</script>
 </head>
 <body>
 	<nav>
       <div class="nav-wrapper">
-          <a class="brand-logo">Welcome Home, {{user.first_name}}</a>
+          <a href="/dashboard" class="brand-logo">Welcome Home, {{user.first_name}}</a>
           <ul id="nav-mobile" class="right hide-on-med-and-down">
           	<li class="active"><a href="">Calendar</a></li>
           	<li><a href="">User Profile</a></li>
@@ -21,6 +25,100 @@
 	      </ul>
         </div>
     </nav>
-    <div class="container"></div>
+    <div class="container">
+    	<div class="row">
+    		<div id="calendar" class="col s10"></div>
+    		<div class="col s2">
+    			<a class="center waves-effect waves-light btn btn-large addevent-button" href="#addevent">Add Event</a>
+    			<div id="addevent" class="modal">
+    				<div class="modal-content">
+		    			<form action="/add_event" method="post">
+		    				{% csrf_token %}
+		    				<h3>Add an Event</h3>
+		    				<div class="row">
+		    					<div class="input-field col s12">
+									<input id="title" type="text" name="title" class="validate" required="" aria-required="true">
+									<label for="title">Event Name</label>
+								</div>
+		    				</div>
+		    				<div class="row">
+		    					<div class="col s6">
+									<label for="start">Start Date:</label>
+								</div>
+		    					<div class="col s6">
+									<label for="end">End Date (Optional):</label>
+								</div>
+		    				</div>
+		    				<div class="row">
+		    					<div class="input-field col s6">
+									<input id="start" type="date" name="start" class="validate" required="" aria-required="true">
+								</div>
+		    					<div class="input-field col s6">
+									<input id="end" type="date" name="end">
+								</div>
+		    				</div>
+		    				<div class="row">
+		    					<div class="col s6">
+									<label for="start_time">Start Time (Optional):</label>
+								</div>
+		    					<div class="col s6">
+									<label for="end_time">End Time (Optional):</label>
+								</div>
+		    				</div>
+		    				<div class="row">
+		    					<div class="input-field col s6">
+									<input id="start_time" type="time" name="start_time">
+								</div>
+		    					<div class="input-field col s6">
+									<input id="end_time" type="time" name="end_time">
+								</div>
+		    				</div>
+		    				<div class="row">
+		    					<div class="input-field col s12">
+			    					<textarea id="description" class="materialize-textarea" name="description"></textarea>
+			    					<label for="description">Event Description (Optional):</label>
+			    				</div>
+		    				</div>
+		    				<div class="row">
+		    					<div class="col s12 offset-s9">
+				    				<button class="btn waves-effect waves-light" type="submit" name="action">Submit
+										<i class="material-icons right">send</i>
+									</button>
+								</div>
+							</div>
+		    			</form>
+		    		</div>
+	    		</div>
+    		</div>
+    	</div>
+    </div>
+
+    <script type="text/javascript">
+
+    	$(document).ready(function() {
+    		console.log('hello');
+
+    		$('.modal').modal();
+
+    		$('#calendar').fullCalendar({
+    			// header for calendar
+    			header: {
+    				left: 'prev,next today',
+    				center: 'title',
+    				right: 'month, agendaWeek, agendaDay'
+    			},
+    			// select multiple days
+    			selectable: true,
+    			selectHelper: true,
+    			editable: false,
+    			eventLimit: true,
+    			// array of events to render on the calendar
+    			events: '/calendar_events',
+
+
+    		});
+
+    	});
+    </script>
 </body>
 </html>

@@ -1,11 +1,51 @@
 <!DOCTYPE html>
 <html>
-<head>
-	<title>Home</title>
-	{% load staticfiles %}
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/css/materialize.min.css">
-</head>
-<body>
-	<h1>This is the splash page.</h1>
-</body>
+  <head>
+		{% load staticfiles %}
+    <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/css/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'houseplanner/css/index_style.css' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  </head>
+  <title>Home</title>
+  <body>
+      <div class="row">
+        <div class="header col s12">
+          <h2> Welcome Home </h2>
+        </div>
+      </div>
+      <div class="button-wrapper valign-wrapper center-align">
+        <div class="row">
+          <div class="col s12 m6 offset-m3 l6 offset-l3">
+            <h3 class="catchphrase"> Taking the Headache out of Housemates</h3>
+            <a class="register-button waves-effect waves-light btn-large" href="/login"> <i class="material-icons left">mode_edit</i>Login/Register</a>
+          </div>
+        </div>
+      </div>
+      <!-- <footer class="page-footer">
+        <div class="container">
+          <div class="row">
+            <div class="col l6 s12">
+              <h5 class="white-text">About Us</h5>
+              <p class="grey-text text-lighten-4"></p>
+            </div>
+            <div class="col l4 offset-l2 s12">
+              <h5 class="white-text">Links</h5>
+              <ul>
+                <li><a class="grey-text text-lighten-3" href="#!">Big</a></li>
+                <li><a class="grey-text text-lighten-3" href="#!">Stick</a></li>
+                <li><a class="grey-text text-lighten-3" href="#!">Rick</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="footer-copyright">
+          <div class="container">
+          © GDHJ
+          </div>
+        </div>
+      </footer> -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript" src="js/materialize.min.js"></script>
+  </body>
 </html>

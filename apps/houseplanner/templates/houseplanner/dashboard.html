@@ -5,7 +5,7 @@
 		{% load staticfiles %}
 	    <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 	    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/css/materialize.min.css">
-	    <link rel="stylesheet" type="text/css" href="{% static 'houseplanner/css/dashboard_style.css' %}">
+	    <link rel="stylesheet" type="text/css" href="{% static 'houseplanner/css/style.css' %}">
 	    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     </head>
     <meta charset="utf-8">
@@ -17,105 +17,124 @@
           <a href="/dashboard" class="brand-logo">Welcome Home, {{user.first_name}}</a>
           <ul id="nav-mobile" class="right hide-on-med-and-down">
             <li><a href="/calendar">Calendar</a></li>
-            <li><a href="/group_charge"> Make a Charge </a></li>
+            <li><a href="/expenses"> Expenses </a></li>
             <li><a href="/edit_user">User Profile</a></li>
             <li><a href="/logout">Logout</a></li>
           </ul>
         </div>
     </nav>
-    <div class="main_window row">
-      <div class="left_nav col s12 m4 l2">
-        <ul class="collapsible" data-collapsible="accordion">
-          <li>
-            <div class="collapsible-header"> House Code</div>
-            <div class="collapsible-body"><span><input class="center" id="house_id" type="text" name="house_code" value="{{house.house_code}}" disabled></span></div>
-          </li>
-        </ul>
-        <h5 class="sidebar_title"> Current Housemates </h5>
-				{% for housemate in housemates %}
-        <ul class="collapsible" data-collapsible="accordion">
-          <li>
-            <div class="collapsible-header">{{housemate.first_name}} {{housemate.last_name}}</div>
-            <div class="collapsible-body"><span>
-              {{housemate.email}}
-              {{housemate.phone}}
 
-            </span>
-            </div>
-          </li>
-        </ul>
-				{% endfor %}
-      </div>
-        <div class="middle col s12 m4 l8">
-          <div class="container">
-            <h3> Messages </h3>
-            <form class="post_message col s12" action="/post_message" method="post">
-							{% csrf_token %}
-								<label for="textarea1"> Post a Message: </label>
-                <div class="input-field col s12">
-                  <textarea id="textarea1" class="materialize-textarea" name="message_field"></textarea>
-                  <button class="submit_post btn-large waves-effect waves-light" type="submit" name="action">Submit
-                  <i class="material-icons right">send</i>
-                  </button>
-                </div>
-            </form>
-            <div class="messages">
-  						{% for message in messages %}
-  							<p> {{message.created_at}} </p>
-  							<p> {{message.user.first_name}} posted: {{message.message}} </p>
-  							{% for comment in comments %}
-                  {% if comment.message.id == message.id %}
-    								<p> {{comment.created_at}} </p>
-    								<p> {{comment.user.first_name}} commented: {{comment.comment}} </p>
-                  {% endif %}
-  							{% endfor %}
-  							<form class="post_comment col s8" action="/post_comment/{{message.id}}" method="post">
-  								{% csrf_token %}
-  									<label for="textarea1"> Post a Comment: </label>
-  									<div class="input-field col s8">
-  										<textarea id="textarea2" class="materialize-textarea" name="comment_field"></textarea>
-  										<button class="submit_post btn waves-effect waves-light" type="submit" name="action">Submit
-  										<i class="material-icons right">send</i>
-  										</button>
-  									</div>
-  							</form>
-  						{% endfor %}
-            </div>
-          </div>
-        </div>
-          <div class="right_nav col s12 m4 l2">
-            <div class="container">
-              <h5 class="sidebar_title"> Upcoming Events </h5>
-              <ul>
-              	{% for event in events %}
-               		<li><a href="/event/{{event.id}}">{{event.title}}</a></li>
-                {% endfor %}
-              </ul>
-            </div>
-          </div>
+    <div id="main-window" class="row">
+		<div class="left_nav col s2">
+			<ul class="collapsible" data-collapsible="accordion">
+			  <li>
+			    <div class="collapsible-header center"> House Info</div>
+			    <div class="collapsible-body"> <p class="house_name">{{house.nickname}}</p><span><input class="center" id="house_id" type="text" name="house_code" value="{{house.house_code}}" disabled></span></div>
+			  </li>
+			</ul>
+			<h5 class="sidebar_title center"> Current Housemates </h5>
+			{% for housemate in housemates %}
+		      <ul class="collapsible" data-collapsible="accordion">
+		        <li>
+		          <div class="collapsible-header">{{housemate.first_name}} {{housemate.last_name}}</div>
+		          <div class="collapsible-body">
+		            <p>Email: {{housemate.email}}</p>
+		            <p>Phone: {{housemate.phone}}</p>
+		          </div>
+		        </li>
+		      </ul>
+			{% endfor %}
+		</div>
+		<div class="middle-content col s8">
+		    <h3> Message Board </h3>
+		    <form class="post_message col s12" action="/post_message" method="post">
+				{% csrf_token %}
+				<label for="textarea1"> Post a Message: </label>
+		        <div class="input-field col s12">
+		          <textarea id="textarea1" class="materialize-textarea" name="message_field"></textarea>
+		          <button class="submit_post btn-large waves-effect waves-light right" type="submit" name="action">Submit
+		          <i class="material-icons right">send</i>
+		          </button>
+		        </div>
+		    </form>
+		    <div class="messages">
+		    	{% for message in messages %}
+			    	<div class="row">
+				        <div class="col s8 offset-s2">
+				          <div class="card teal darken-4">
+				            <div class="card-content white-text">
+				              <span class="card-title">{{message.created_at}}</span>
+				              <p class="truncate">{{message.user.first_name}} posted: {{message.message}}</p>
+				            </div>
+				            <div class="card-action">
+				              <a class="quicklook" href="#modal/{{message.id}}">Quicklook</a>
+				              <div id="modal/{{message.id}}" class="modal modal-fixed-footer">
+							    <div class="modal-content">
+							      <h4>{{message.created_at}}</h4>
+							      <h5>{{message.user.first_name}} posted: {{message.message}}</h5>
+							      <div class="comment">
+							      	{% for comment in comments %}
+										{% if comment.message.id == message.id %}
+											<p>({{comment.created_at}}) {{comment.user.first_name}} commented: {{comment.comment}}</p>
+										{% endif %}
+									{% endfor %}
+							      </div>
+							 	</div>
+							 	<div class="modal-footer">
+							    	<a href="/message/{{message.id}}" class="modal-action modal-close waves-effect waves-green btn-flat">More Info/Comment</a>
+							    </div>
+				            </div>
+				          </div>
+				        </div>
+	  				</div>
+	  				</div>
+  				{% endfor %}
+			</div>
+		</div>
+		<div class="right_nav col s2">
+		  <h5 class="sidebar_title center"> House Events </h5>
+		  <ul>
+		  	{% for event in events %}
+		   		<li class="center"><a href="/event/{{event.id}}" class="waves-effect waves-green btn-flat">{{event.title}}</a></li>
+		    {% endfor %}
+		  </ul>
+		</div>
     </div>
 
     <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/js/materialize.min.js"></script>
     <script>
-      $(document).ready(function(){
-          $('.collapsible').collapsible();
-        });
+		$(document).ready(function(){
+		  $('.modal').modal();
+		});
+
+   //        $('.post_message').submit(function(e){
+   //        	console.log("enetered message ajax")
+	  //       e.preventDefault()
+	  //       $.ajax({
+	  //         url: '/post_message',
+	  //         method: 'post',
+	  //         data: $(this).serialize(),
+	  //         success: function(serverResponse){
+	  //           $('.messages').html(serverResponse)
+	  //         }
+	  //       })
+	  //       $(this).trigger('reset');
+	  //     });
 
 
-      $('.post_message').submit(function(e){
-        e.preventDefault()
-        $.ajax({
-          url: '/post_message',
-          method: 'post',
-          data: $(this).serialize(),
-          success: function(serverResponse){
-            console.log(serverResponse)
-            $('.messages').html(serverResponse)
-          }
-        })
-        $(this).trigger('reset')
-      })
+	  //     $(document).on('click', '.quicklook', function() {
+			// console.log('clicked quicklook');
+			// $('#modal').modal('open');
+		 //  })
+
+
+		// MAKE IT A CLICK FUNCTION INSTEAD OF SUBMIT
+		// how to get the data to serialize if targeting the BUTTON click instead of the form
+	   
+
+
+      
       // $('#textarea2').submit(function(e){
       //   e.preventDefault()
       //   $.ajax({

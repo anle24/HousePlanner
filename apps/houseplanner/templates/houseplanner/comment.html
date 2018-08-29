@@ -1,0 +1,5 @@
+{% for comment in comments %}
+
+		<p>({{comment.created_at}}) {{comment.user.first_name}} commented: {{comment.comment}}</p>
+		<a class="center waves-effect waves-light btn red darken-4" href="/delete_comment/{{comment.id}}">Delete</a>
+{% endfor %}

@@ -6,6 +6,7 @@ from django.db import models
 import re
 import bcrypt
 import datetime
+from IPython import embed
 
 EMAIL_REGEX = re.compile(r'^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$')
 
@@ -54,7 +55,7 @@ class UserManager(models.Manager):
 				user = self.get(email=postData['email'])
 		else:
 			errors.append('Email is not registered')
-
+	
 		if not errors:
 			return { 'theuser': user }
 		else:
@@ -68,7 +69,7 @@ class UserManager(models.Manager):
 			errors.append('First name cannot contain numbers')
 		if len(postData['last_name']) < 2:
 			errors.append('Last name must at least 2 letters')
-		if not postData['last_name'].isalpha():
+		if postData['last_name'].isdigit():
 			errors.append('Last name cannot contain numbers')
 		if not EMAIL_REGEX.match(postData['email']):
 			errors.append('Invalid Email')
@@ -95,15 +96,13 @@ class ExpenseManager(models.Manager):
 		    errors.append("Expense name must not be blank!")
 		if len(postData['amount']) < 1:
 		    errors.append("Amount must not be blank!")
-		elif int(postData['amount']) <= 0:
+		elif float(postData['amount']) <= 0:
 			errors.append("Amount can not be zero or a negative number!")
-		elif not postData['amount'].isdigit():
-		    errors.append("Amount must be digit")
 
 		if not errors:
 			if postData['due_date'] == "":
 				expense = Expense.objects.create(name = postData['expense_name'], amount=float(postData['amount']), user=postData['user'])
-			else:
+			else: 
 				expense = Expense.objects.create(name = postData['expense_name'], amount=float(postData['amount']), due_date = postData['due_date'], user=postData['user'])
 			return { 'expense': expense }
 		else:
@@ -164,7 +163,7 @@ class User(models.Model):
 
 class Expense(models.Model):
 	name = models.CharField(max_length=255)
-	amount = models.IntegerField()
+	amount = models.FloatField()
 	due_date = models.DateField(null=True)
 	user = models.ForeignKey(User)
 	objects = ExpenseManager()
@@ -200,3 +199,13 @@ class Event(models.Model):
 	objects = EventManager()
 	created_at = models.DateTimeField(auto_now_add=True)
 	updated_at = models.DateTimeField(auto_now=True)
+
+
+
+
+
+
+
+
+
+

@@ -1,11 +1,14 @@
 from django.shortcuts import render, redirect, HttpResponse
 from .models import House, User, Expense, Message, Comment, Event
+from IPython import embed
 from django.contrib import messages
 import random
 import string
+from IPython import embed
 from django.http import JsonResponse
 from django.core.serializers.json import DjangoJSONEncoder
 import json
+from django.http import HttpResponseRedirect
 # Create your views here.
 
 # render home page
@@ -20,10 +23,13 @@ def login(request):
 
 # render dashboard
 def dashboard(request):
+	# Message.objects.all().delete()
+	# Comment.objects.all().delete()
 	user = User.objects.get(id=request.session['user'])
 	house = User.objects.get(id=request.session['user']).house
 	housemates = User.objects.filter(house=house)
 	messages= Message.objects.filter(user__house=house).order_by("-created_at")
+	# messages = Message.objects.all()
 	comments= Comment.objects.filter(user__house=house).order_by("-created_at")
 	events = Event.objects.filter(user__house=house).order_by("start")
 	context = {
@@ -130,7 +136,10 @@ def process_logreg(request):
 			return redirect('/login')
 		if 'theuser' in user:
 			request.session['user'] = user['theuser'].id
-			return redirect('/dashboard')
+			if User.objects.get(id=request.session['user']).house == None:
+				return redirect('/join_create')
+			else:
+				return redirect('/dashboard')
 	return redirect('/dashboard')
 
 
@@ -159,9 +168,9 @@ def join_house(request):
 
 ############################################################################################################
 ###################################MESSAGE BOARD############################################################
-############################################################################################################
+############################################################################################################	
 
-#processes posting a message
+# processes posting a message
 def post_message(request):
 	user = User.objects.get(id=request.session['user'])
 	house = User.objects.get(id=request.session['user']).house
@@ -173,22 +182,46 @@ def post_message(request):
 		}
 	else:
 		pass
-	return render(request, 'houseplanner/post.html', context)
+	return redirect('/dashboard')
 
 #processes posting a comment
 def post_comment(request, id):
 	user =  User.objects.get(id=request.session['user'])
 	message = Message.objects.get(id=id)
-	comment = Comment.objects.create(comment=request.POST['comment_field'], user=user, message=message)
-	print comment
-	return redirect('/dashboard')
+	Comment.objects.create(comment=request.POST['comment_field'], user=user, message=message)
+	comment = Comment.objects.filter(message=message)
+	context = {
+		'comments' : comment
+	}
+	return render(request, 'houseplanner/comment.html', context)
 
+def view_message(request, id):
+	message = Message.objects.get(id=id)
+	comments = Comment.objects.filter(message=message)
+	context = {
+		'user': User.objects.get(id=request.session['user']),
+		'message': message,
+		'comments': comments
+	}
+	return render(request, 'houseplanner/message.html', context)
 ############################################################################################################
 ############################################################################################################
 ############################################################################################################
 
+# renders expense history page
+def expense_history(request):
+	user = User.objects.get(id=request.session['user'])
+	house = user.house
+	expenses = Expense.objects.filter(user__house=house).order_by("-created_at")
+	context = {
+		'user': user,
+		'house': house,
+		'expenses': expenses
+	}
+	return render(request, 'houseplanner/expenses.html', context)
 
-# create transactions
+
+# create transactions 
 def create_transactions(request):
 	postData = {
 		'expense_name': request.POST['expense_name'],
@@ -198,13 +231,17 @@ def create_transactions(request):
 	}
 	expense = Expense.objects.createExpense(postData)
 	if 'expense' in expense:
-		return redirect('/dashboard')
+		return redirect('/expenses')
 	elif 'error' in expense:
 		for message in expense['error']:
 			messages.error(request, message)
 		return redirect('/group_charge')
 
-# render calendar
+def delete_expense(request, id):
+	Expense.objects.get(id=id).delete()
+	return redirect('/expenses')
+
+# render calendar 
 def calendar(request):
 	# Event.objects.all().delete()
 	user = User.objects.get(id=request.session['user'])
@@ -219,10 +256,17 @@ def calendarEvents(request):
 	user = User.objects.get(id=request.session['user'])
 	house = user.house
 	housemates = User.objects.filter(house=house)
-	events = Event.objects.filter(user=housemates).values()
+	print housemates
+	events = []
+	for housemate in housemates:
+		if Event.objects.filter(user=housemate).exists():
+			user_events = Event.objects.filter(user=housemate);
+			for event in user_events:
+				events.append(event)
+	print events
 	eventObjects = []
 	for event in events:
-		eventObjects.append({'id':event['id'], 'title': event['title'], 'start': event['start'], 'end': event['end'], 'url': '/event/'+ str(event['id'])})
+		eventObjects.append({'id':event.id, 'title': event.title, 'start': event.start, 'end': event.end, 'url': '/event/'+ str(event.id)})
 	return JsonResponse(eventObjects, safe=False)
 
 # add an event to the calendar
@@ -271,8 +315,23 @@ def delete_event(request, id):
 	Event.objects.get(id=id).delete()
 	return redirect('/calendar')
 
+def delete_message(request, id):
+	Message.objects.get(id=id).delete()
+	return redirect('/dashboard')
+
+def delete_comment(request, id):
+	Comment.objects.get(id=id).delete()
+	return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
 
 # logs user out and redirects to login page
 def logout(request):
 	request.session.clear()
-	return redirect('/login')
+	return redirect('/')
+
+
+
+
+
+
+

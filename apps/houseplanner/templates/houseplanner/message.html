@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Message</title>
+	{% load staticfiles %}
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/css/materialize.min.css">
+	<link rel="stylesheet" type="text/css" href="{% static 'houseplanner/css/style.css' %}">
+	<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/js/materialize.min.js"></script>
+</head>
+<body>
+	<nav>
+      <div class="nav-wrapper">
+          <a href="/dashboard" class="brand-logo">Welcome Home, {{user.first_name}}</a>
+          <ul id="nav-mobile" class="right hide-on-med-and-down">
+            <li><a href="/calendar">Calendar</a></li>
+            <li><a href="/expenses"> Expenses </a></li>
+            <li><a href="/edit_user">User Profile</a></li>
+            <li><a href="/logout">Logout</a></li>
+          </ul>
+        </div>
+    </nav>
+	<div class="container">
+		<h3>Message posted on: {{message.created_at}}</h3>
+		<h4>{{message.message}}</h4>
+		<h5>Comments:</h5>
+		<div class="comments">
+			{% for comment in comments %}
+				<p> ({{comment.created_at}}) {{comment.user.first_name}} commented: {{comment.comment}} 
+					{% if request.session.user == message.user.id %}
+						<a class="" href="/delete_comment/{{comment.id}}">(Delete)</a>
+					{% endif %}
+				</p>
+				
+			{% endfor %}
+		</div>
+		<div class="row">
+			<div class="col s12">
+				<form action="/post_comment/{{message.id}}" class="post_comment" method="post">
+				{% csrf_token %}
+					<div class="row">
+						<div class="input-field col s6">
+							<textarea class="materialize-textarea" name="comment_field" class="validate" required="" aria-required="true"></textarea>
+							<label for="textarea1">Comment</label>
+						</div>
+						<div class="col s2 comment-button">
+							 <button class="btn waves-effect waves-light" type="submit" name="action">Comment
+							    <i class="material-icons right">send</i>
+							  </button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+		{% if request.session.user == message.user.id %}
+			<a class="center waves-effect waves-light btn red darken-4" href="/delete_message/{{message.id}}">Delete Message</a>
+		{% endif %}
+				
+	</div>
+
+	<script type="text/javascript">
+		$(document).ready(function() {
+			$('.post_comment').submit(function(e){
+				console.log('entered comment ajax');
+		        e.preventDefault()
+		        $.ajax({
+		          url: '/post_comment/{{message.id}}',
+		          method: 'post',
+		          data: $(this).serialize(),
+		          success: function(serverResponse){
+		            console.log(serverResponse)
+		            $('.comments').html(serverResponse)
+		          }
+	        	});
+	        	$(this).trigger('reset')
+			})
+		});
+	</script>
+</body>
+</html>

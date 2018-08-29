@@ -1,0 +1,28 @@
+.header {
+  background-color: #18573c;
+  text-align: center;
+  color: white;
+  padding: 2em;
+  box-shadow: 0 1px 1px 1px rgba(0, 0, 0, 0.5);
+}
+html {
+  font-family: GillSans, Calibri, Trebuchet, sans-serif;
+}
+html, body, .button-wrapper{
+  height: 70vh;
+  background-image: url('../images/bgimage.jpg');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+.catchphrase{
+  color: white;
+  text-shadow: 2px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;
+}
+.page-footer{
+  background-color:#18573c;
+}
+.register-button{
+  background-color: #18573c;
+  box-shadow: 0 1px 1px 1px rgba(0, 0, 0, 0.5);
+}

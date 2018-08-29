@@ -14,7 +14,8 @@
           <a href="/dashboard" class="brand-logo">Welcome Home, {{user.first_name}}</a>
           <ul id="nav-mobile" class="right hide-on-med-and-down">
           	<li><a href="/calendar">Calendar</a></li>
-          	<li><a href="">User Profile</a></li>
+          	<li><a href="/expenses"> Expenses </a></li>
+          	<li><a href="/edit_user">User Profile</a></li>
 	        <li><a href="/logout">Logout</a></li>
 	      </ul>
         </div>
@@ -25,7 +26,7 @@
     	<p>Start: {{start_date}} {{start_time}}</p>
     	<p>End: {{end_date}} {{end_time}}</p>
     	<div class="row">
-    		<a class="center waves-effect waves-light btn" href="/calendar">Go Back</a>
+    		<a class="center waves-effect waves-light btn" href="/calendar">Calendar</a>
     		{% if request.session.user == event.user.id %}
     			<a class="center waves-effect waves-light btn red darken-4" href="/delete_event/{{event.id}}">Delete</a>
     		{% endif %}
